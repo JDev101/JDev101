@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Default file path
+fortune_file=~/.fortunes.txt
+# Default number of fortunes to show
+num_fortunes=1
+# Flags
+file_flag=false
+add_flag=false
+
+# Check for -f, -a, and -n flags
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -f)
+            file_flag=true
+            fortune_file="$2"
+            shift 2
+            ;;
+        -a)
+            add_flag=true
+            shift
+            ;;
+        -n)
+            num_fortunes="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+done
+
+# If -f flag is not given, use the default fortune file
+if [ "$file_flag" = false ]; then
+    fortune_file=~/.fortunes.txt
+fi
+
+# If -a flag is given, prompt user for fortune input and append to file
+if [ "$add_flag" = true ]; then
+    echo "Enter a new fortune:"
+    read fortune_input
+    echo "$fortune_input" >> "$fortune_file"
+    echo "Fortune added."
+    exit 0
+fi
+
+# Loop to display fortunes
+for ((i=0; i<num_fortunes; i++)); do
+    # Use shuf and head to display a random fortune
+    fortune=$(shuf -n 1 "$fortune_file")
+    echo "Fortune: $fortune"
+done
+
+exit 0
